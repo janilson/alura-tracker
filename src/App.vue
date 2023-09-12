@@ -1,77 +1,51 @@
 <template>
-  <main class="columns is-gapless is-multiline" :class="{ 'modo-escuro': modoEscuroAtivo }">
+  <Notificacoes />
+  <main class="columns is-gapless is-multiline" :class="{ 'modo-escuro' : modoEscuro}">
     <div class="column is-one-quarter">
-      <BarraLateral @aoTemaAlterado="trocarTema"/>
+      <BarraLateral @aoAlterarModo="alterarModo"/>
     </div>
-    <div class="column is-three-quarter conteudo">
-      <Formulario @aoSalvarTarefa="salvarTarefa"/>
-      <div class="lista">
-        <Tarefa v-for="(tarefa, index) in tarefas" :key="index" :tarefa="tarefa"/>
-      </div>
-      <Box v-if="listaEstaVazia">
-        Você não está muito produtivo hoje :(
-      </Box>
+    <div class="column is-three-quarters conteudo">
+      <router-view></router-view>
     </div>
   </main>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import { defineComponent } from "vue";
 import BarraLateral from "@/components/BarraLateral.vue";
-import Box from "@/components/Box.vue";
-import Formulario from "@/components/Formulario.vue";
-import Tarefa from "@/components/Tarefa.vue";
-import ITarefa from "@/interfaces/ITarefa";
+import Notificacoes from "@/components/Notificacoes.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
-    Box,
     BarraLateral,
-    Formulario,
-    Tarefa
+    Notificacoes
   },
-
-  data() {
+  data () {
     return {
-      tarefas: [] as ITarefa[],
-      modoEscuroAtivo: false
-    };
-  },
-
-  computed: {
-    listaEstaVazia(): boolean {
-      return this.tarefas.length === 0;
+      modoEscuro: false
     }
   },
-
   methods: {
-    salvarTarefa(tarefa: ITarefa) {
-      this.tarefas.push(tarefa);
-    },
-
-    trocarTema(modoEscuroAtivo: boolean) {
-      this.modoEscuroAtivo = modoEscuroAtivo;
+    alterarModo (modoEscuro: boolean) : void {
+      this.modoEscuro = modoEscuro
     }
   }
 });
 </script>
 
 <style>
-.lista {
-  padding: 1.25rem;
-}
-
 main {
   --bg-primario: #fff;
   --texto-primario: #000;
 }
-
 main.modo-escuro {
   --bg-primario: #2b2d42;
   --texto-primario: #ddd;
 }
-
+.lista {
+  padding: 1.25rem;
+}
 .conteudo {
   background-color: var(--bg-primario);
 }
