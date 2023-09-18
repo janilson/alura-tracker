@@ -1,0 +1,27 @@
+{
+  "projetos": [
+    {
+      "id": 1,
+      "nome": "Novo Projeto 0"
+    },
+    {
+      "nome": "Novo Projeto",
+      "id": 2
+    },
+    {
+      "id": 3,
+      "nome": "Teste"
+    }
+  ],
+  "tarefas": [
+    {
+      "duracaoEmSegundos": 3,
+      "descricao": "Tarefa 1",
+      "projeto": {
+        "id": 1,
+        "nome": "Novo Projeto 0"
+      },
+      "id": 1
+    }
+  ]
+}

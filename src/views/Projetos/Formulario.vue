@@ -18,12 +18,12 @@
 </template>
 
 <script lang="ts">
-import {useStore} from "@/store";
-import {defineComponent} from "vue";
-
-import {ADICIONA_PROJETO, ALTERA_PROJETO} from '@/store/tipo-mutacoes'
-import INotificacao, {TipoNotificacao} from "@/interfaces/INotificacao";
+import {defineComponent, ref} from "vue";
+import {useRouter} from "vue-router";
 import useNotificador from "@/hooks/notificador";
+import INotificacao, {TipoNotificacao} from "@/interfaces/INotificacao";
+import {useStore} from "@/store";
+import {ALTERAR_PROJETO, CADASTRAR_PROJETO} from "@/store/tipo-acoes";
 
 export default defineComponent({
   name: "FormularioProjeto",
@@ -33,48 +33,55 @@ export default defineComponent({
     }
   },
 
-  mounted() {
-    if (this.id) {
-      const projeto = this.store.state.projetos.find(proj => proj.id == this.id)
-      this.nomeDoProjeto = projeto?.nome || ''
+  setup(props) {
+    const router = useRouter();
+    const store = useStore()
+    const {notificar} = useNotificador()
+
+    const nomeDoProjeto = ref("");
+
+    if (props.id) {
+      const projeto = store.state.projeto.projetos.find(proj => proj.id == props.id)
+
+      nomeDoProjeto.value = projeto?.nome || ''
     }
-  },
-  data() {
-    return {
-      nomeDoProjeto: ""
-    };
-  },
-  methods: {
-    salvar() {
+
+    const finalizarAcao = (notificacao: INotificacao): void => {
+      notificar(notificacao.tipo, notificacao.titulo, notificacao.texto);
+      nomeDoProjeto.value = "";
+      router.push('/projetos')
+    }
+
+    const salvar = () => {
       const notificacao: INotificacao = {
         texto: 'Projeto salvo com sucesso!',
         titulo: 'Novo Projeto',
         tipo: TipoNotificacao.SUCESSO
       };
 
-      if (this.id) {
+      if (props.id) {
         notificacao.texto = 'Projeto alterado com sucesso';
         notificacao.titulo = 'Alterar Projeto';
 
-        this.store.commit(ALTERA_PROJETO, {
-          id: this.id,
-          nome: this.nomeDoProjeto
-        })
+        store.dispatch(ALTERAR_PROJETO,
+            {
+              id: props.id,
+              nome: nomeDoProjeto.value
+            })
+            .then(() => {
+              finalizarAcao(notificacao);
+            })
       } else {
-        this.store.commit(ADICIONA_PROJETO, this.nomeDoProjeto)
+        store.dispatch(CADASTRAR_PROJETO, nomeDoProjeto)
+            .then(() => {
+              finalizarAcao(notificacao);
+            })
       }
+    };
 
-      this.notificar(notificacao.tipo, notificacao.titulo, notificacao.texto);
-      this.nomeDoProjeto = "";
-      this.$router.push('/projetos')
-    }
-  },
-  setup() {
-    const store = useStore()
-    const {notificar} = useNotificador()
     return {
-      store,
-      notificar
+      nomeDoProjeto,
+      salvar
     }
   }
 });

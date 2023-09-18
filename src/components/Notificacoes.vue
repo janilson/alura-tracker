@@ -14,33 +14,6 @@
         {{ notificacao.texto }}
       </div>
     </article>
-    <!--    <article class="message is-success">-->
-    <!--      <div class="message-header">-->
-    <!--        <p>Success</p>-->
-    <!--        <button class="delete" aria-label="delete"></button>-->
-    <!--      </div>-->
-    <!--      <div class="message-body">-->
-    <!--        Success-->
-    <!--      </div>-->
-    <!--    </article>-->
-    <!--    <article class="message is-warning">-->
-    <!--      <div class="message-header">-->
-    <!--        <p>Warning</p>-->
-    <!--        <button class="delete" aria-label="delete"></button>-->
-    <!--      </div>-->
-    <!--      <div class="message-body">-->
-    <!--        Warning-->
-    <!--      </div>-->
-    <!--      <article class="message is-danger">-->
-    <!--        <div class="message-header">-->
-    <!--          <p>Danger</p>-->
-    <!--          <button class="delete" aria-label="delete"></button>-->
-    <!--        </div>-->
-    <!--        <div class="message-body">-->
-    <!--          Error-->
-    <!--        </div>-->
-    <!--      </article>-->
-    <!--    </article>-->
   </div>
 </template>
 

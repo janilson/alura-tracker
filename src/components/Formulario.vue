@@ -3,10 +3,10 @@
     <div class="columns">
       <div class="column is-5" role="form" aria-label="Formulário para iniciar uma nova tarefa">
         <input
-          class="input"
-          type="text"
-          placeholder="Qual tarefa você deseja iniciar?"
-          v-model="descricao"
+            class="input"
+            type="text"
+            placeholder="Qual tarefa você deseja iniciar?"
+            v-model="descricao"
         />
       </div>
       <div class="column is-3">
@@ -14,9 +14,9 @@
           <select v-model="idProjeto">
             <option value="">Selecione o projeto</option>
             <option
-              :value="projeto.id"
-              v-for="projeto in projetos"
-              :key="projeto.id"
+                :value="projeto.id"
+                v-for="projeto in projetos"
+                :key="projeto.id"
             >
               {{ projeto.nome }}
             </option>
@@ -31,11 +31,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
-import Temporizador from "./Temporizador.vue";
-import { useStore } from 'vuex'
+import {computed, defineComponent, ref} from "vue";
 
-import { key } from '@/store'
+import Temporizador from "@/components/Temporizador.vue";
+import {useStore} from "@/store";
+import {OBTER_PROJETOS} from "@/store/tipo-acoes";
 
 export default defineComponent({
   name: "FormularioC",
@@ -43,26 +43,31 @@ export default defineComponent({
   components: {
     Temporizador,
   },
-  data () { 
-    return {
-      descricao: '',
-      idProjeto: ''      
-    }
-  },
-  methods: {
-    salvarTarefa (tempoEmSegundos: number) : void {    
-      this.$emit('aoSalvarTarefa', {
+
+  setup(props, {emit}) {
+    const descricao = ref("");
+    const idProjeto = ref("");
+    const store = useStore();
+    store.dispatch(OBTER_PROJETOS);
+
+    const projetos = computed(() => store.state.projeto.projetos);
+
+    const salvarTarefa = (tempoEmSegundos: number): void => {
+      emit('aoSalvarTarefa', {
         duracaoEmSegundos: tempoEmSegundos,
-        descricao: this.descricao,
-        projeto: this.projetos.find(proj => proj.id == this.idProjeto)
-      })
-      this.descricao = ''
+        descricao: descricao.value,
+        projeto: projetos.value.find(proj => proj.id == idProjeto.value)
+      });
+
+      descricao.value = '';
+      idProjeto.value = '';
     }
-  },
-  setup () {
-    const store = useStore(key)
+
     return {
-      projetos: computed(() => store.state.projetos)
+      descricao,
+      idProjeto,
+      salvarTarefa,
+      projetos
     }
   }
 });
@@ -71,6 +76,7 @@ export default defineComponent({
 .button {
   margin-left: 8px;
 }
+
 .box {
   background-color: var(--bg-primario);
   color: var(--texto-primario);

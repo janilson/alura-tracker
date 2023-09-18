@@ -5,43 +5,43 @@
         <i class="fas fa-plus"></i>
       </span>
       <span>Novo projeto</span>
-    </router-link> 
+    </router-link>
     <table class="table is-fullwidth">
       <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>
-            Ações
-          </th>
-        </tr>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>
+          Ações
+        </th>
+      </tr>
       </thead>
       <tbody>
-        <tr v-for="projeto in projetos" :key="projeto.id">
-          <td>{{ projeto.id }}</td>
-          <td>{{ projeto.nome }}</td>
-          <td>
-            <router-link :to="`/projetos/${projeto.id}`" class="button">
+      <tr v-for="projeto in projetos" :key="projeto.id">
+        <td>{{ projeto.id }}</td>
+        <td>{{ projeto.nome }}</td>
+        <td>
+          <router-link :to="`/projetos/${projeto.id}`" class="button">
               <span class="icon is-small">
                 <i class="fas fa-pencil-alt"></i>
               </span>
-            </router-link>
-            <button class="button ml-2 is-danger" @click="excluir(projeto.id)">
+          </router-link>
+          <button class="button ml-2 is-danger" @click="excluir(projeto.id)">
               <span class="icon is-small">
                 <i class="fas fa-trash"></i>
               </span>
-            </button>
-          </td>
-        </tr>
+          </button>
+        </td>
+      </tr>
       </tbody>
     </table>
   </section>
 </template>
 
 <script lang="ts">
-import { useStore } from "@/store";
-import { computed, defineComponent } from "vue";
-import {EXCLUIR_PROJETO} from '@/store/tipo-mutacoes'
+import {useStore} from "@/store";
+import {computed, defineComponent} from "vue";
+import {OBTER_PROJETOS, REMOVER_PROJETO} from "@/store/tipo-acoes";
 import INotificacao, {TipoNotificacao} from "@/interfaces/INotificacao";
 import {notificacaoMixin} from "@/mixins/notificar";
 
@@ -51,22 +51,24 @@ export default defineComponent({
     notificacaoMixin
   ],
   methods: {
-    excluir (id: string) {
-      this.store.commit(EXCLUIR_PROJETO, id);
+    excluir(id: string) {
+      this.store.dispatch(REMOVER_PROJETO, id)
+          .then(() => {
+            const notificacao: INotificacao = {
+              texto: 'Projeto removido com sucesso!',
+              titulo: 'Remover Projeto',
+              tipo: TipoNotificacao.ATENCAO
+            };
 
-      const notificacao: INotificacao = {
-        texto: 'Projeto removido com sucesso!',
-        titulo: 'Remover Projeto',
-        tipo: TipoNotificacao.ATENCAO
-      };
-
-      this.notificar(notificacao.tipo, notificacao.titulo, notificacao.texto);
+            this.notificar(notificacao.tipo, notificacao.titulo, notificacao.texto);
+          });
     }
   },
-  setup () {
-    const store = useStore()
+  setup() {
+    const store = useStore();
+    store.dispatch(OBTER_PROJETOS);
     return {
-      projetos: computed(() => store.state.projetos),
+      projetos: computed(() => store.state.projeto.projetos),
       store
     }
   }
